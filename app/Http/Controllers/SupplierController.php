@@ -10,9 +10,10 @@ class SupplierController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $suppliers = Supplier::all();
+        $limit = $request->query('limit', 10);
+        $suppliers = Supplier::paginate($limit);
         return view('suppliers.index', compact('suppliers'));
     }
 

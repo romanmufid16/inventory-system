@@ -6,9 +6,8 @@
             <!-- title -->
             <h1 class="inline-block xl:text-xl text-lg font-semibold leading-6">Products</h1>
         </div>
-        <div class="grid grid-cols-1"> 
-            <div class="card" id="listjs"
-                data-list="product_checks,name,quantity,price,action_info">
+        <div class="grid grid-cols-1">
+            <div class="card" id="listjs" data-list="name,quantity,price,action_info">
                 <div
                     class="btn-toolbar border-b border-gray-300 px-5 py-3 flex flex-col lg:flex-row lg:justify-between lg:items-center mb-4 gap-3">
                     <div class="flex">
@@ -17,17 +16,17 @@
                         <input type="search"
                             class="border border-l-0 border-gray-300 text-gray-900 rounded-r-md focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none listjs-search" />
                     </div>
-                    
+
                     <div class="lg:ml-auto flex">
                         <label
                             class="leading-[1.7] p-2 px-3 border border-r-0 flex items-center justify-center bg-gray-200 border-gray-300 rounded-l-md">Show</label>
-                        <select
+                        <select name="limit"
                             class="text-base py-2 px-4 block w-40 border-gray-300 focus:border-indigo-600 focus:ring-indigo-600 disabled:opacity-50 disabled:pointer-events-none"
-                            id="listjs-items-per-page">
-                            <option value="10" selected>10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
+                            id="limit" onchange="updateLimit()">
+                            <option value="10" {{ request('limit') == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ request('limit') == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ request('limit') == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('limit') == 100 ? 'selected' : '' }}>100</option>
                         </select>
                         <label
                             class="leading-[1.7] p-2 px-3 border border-l-0 flex items-center justify-center bg-gray-200 border-gray-300 rounded-r-md">items</label>
@@ -36,9 +35,9 @@
 
                 <div class="relative overflow-x-auto">
                     <table class="text-left w-full whitespace-nowrap">
-                        <thead class="bg-gray-200 text-gray-700">
-                            <tr class="border-b border-gray-300 hover:bg-gray-100">
-                                <th class="listjs-sorter px-3 py-3" data-sort="product_checks">
+                        <thead class="bg-sky-800 text-white">
+                            <tr class="border-b border-gray-300">
+                                <th class="pl-3 py-3">
                                     <div class="flex items-center mb-1">
                                         <input
                                             class="w-4 h-4 text-indigo-600 bg-white border-gray-300 rounded focus:ring-indigo-600 focus:outline-none focus:ring-2"
@@ -46,6 +45,7 @@
                                         <label for="checkAll"></label>
                                     </div>
                                 </th>
+                                <th class="py-3">No</th>
                                 <th class="listjs-sorter px-6 py-3" data-sort="name">Product Name</th>
                                 <th class="listjs-sorter px-6 py-3" data-sort="quantity">Quantity</th>
                                 <th class="listjs-sorter px-6 py-3" data-sort="price">Price</th>
@@ -53,56 +53,59 @@
                             </tr>
                         </thead>
                         <tbody class="list">
-                            @foreach ($product as $item)
-                            <tr class="border-b border-gray-300 hover:bg-gray-100">
-                                <td class="product_checks px-3 py-3">
-                                    <div class="flex items-center mb-1">
-                                        <input
-                                            class="w-4 h-4 text-indigo-600 bg-white border-gray-300 rounded focus:ring-indigo-600 focus:outline-none focus:ring-2"
-                                            type="checkbox" value="{{ $item->id }}" id="productCheckbox2" />
-                                        <label for="productCheckbox2"></label>
-                                    </div>
-                                </td>
-                                <td class="name px-6 py-3">{{ $item->name }}</td>
-                                <td class="quantity px-6 py-3">{{ $item->quantity }}</td>
-                                <td class="price px-6 py-3">{{ $item->price }}</td>
-                                <td class="action_info px-6 py-3">
-                                    <div class="dropdown">
-                                        <a class="btn rounded-full h-8 w-8 flex items-center gap-x-2 bg-transparent text-gray-600 border-transparent border disabled:opacity-50 disabled:pointer-events-none hover:text-gray-800 hover:bg-gray-300 hover:border-gray-300 active:bg-gray-300 active:border-gray-300 active:text-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 btn-sm"
-                                            href="#!" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i data-feather="more-vertical" class="icon-xs"></i>
-                                        </a>
+                            @foreach ($product as $i => $item)
+                                <tr class="border-b border-gray-300 hover:bg-gray-100">
+                                    <td class="product_checks pl-3 py-3">
+                                        <div class="flex items-center mb-1">
+                                            <input
+                                                class="w-4 h-4 text-indigo-600 bg-white border-gray-300 rounded focus:ring-indigo-600 focus:outline-none focus:ring-2"
+                                                type="checkbox" value="{{ $item->id }}" id="productCheckbox2" />
+                                            <label for="productCheckbox2"></label>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">{{ $i + 1 }}</td>
+                                    <td class="name px-6 py-3">{{ $item->name }}</td>
+                                    <td class="quantity px-6 py-3">{{ $item->quantity }}</td>
+                                    <td class="price px-6 py-3">{{ $item->price }}</td>
+                                    <td class="action_info px-6 py-3">
+                                        <div class="dropdown">
+                                            <a class="btn rounded-full h-8 w-8 flex items-center gap-x-2 bg-transparent text-gray-600 border-transparent border disabled:opacity-50 disabled:pointer-events-none hover:text-gray-800 hover:bg-gray-300 hover:border-gray-300 active:bg-gray-300 active:border-gray-300 active:text-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 btn-sm"
+                                                href="#!" role="button" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                                <i data-feather="more-vertical" class="icon-xs"></i>
+                                            </a>
 
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item flex items-center" href="#!">Action</a></li>
-                                            <li><a class="dropdown-item flex items-center" href="#!">Another action</a>
-                                            </li>
-                                            <li><a class="dropdown-item flex items-center" href="#!">Something else
-                                                    here</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item flex items-center" href="#!">Action</a>
+                                                </li>
+                                                <li><a class="dropdown-item flex items-center" href="#!">Another
+                                                        action</a>
+                                                </li>
+                                                <li><a class="dropdown-item flex items-center" href="#!">Something else
+                                                        here</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
                 <div class="btn-toolbar flex flex-col md:flex-row justify-between items-center px-6 py-4 gap-2">
-                    <p class="" id="listjs-showing-items-label">Showing 100 items</p>
+                    <p class="">{{ $product->total() }} entries found</p>
                     <div class="pagination-buttons flex gap-2">
-                        <button
-                            class="btn bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-800 hover:border-indigo-800 active:bg-indigo-800 active:border-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-300 prev">
-                            Previous
-                        </button>
-
-                        <ul class="pagination flex gap-2"></ul>
-                        <button
-                            class="btn bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-800 hover:border-indigo-800 active:bg-indigo-800 active:border-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-300 next">
-                            Next
-                        </button>
+                        {{ $product->links() }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        function updateLimit() {
+            var limit = document.getElementById("limit").value;
+            var url = new URL(window.location.href);
+            url.searchParams.set('limit', limit);
+            window.location.href = url; // Muat ulang halaman dengan parameter baru
+        }
+    </script>
 @endsection

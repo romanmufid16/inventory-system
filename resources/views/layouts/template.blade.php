@@ -716,19 +716,6 @@
                                         </li>
                                         <li>
                                             <a class="dropdown-item" href="#">
-                                                <i class="w-4 h-4" data-feather="activity"></i>
-                                                Activity Log
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="w-4 h-4" data-feather="star"></i>
-                                                Go Pro
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="#">
                                                 <i class="w-4 h-4" data-feather="settings"></i>
                                                 Account Settings
                                             </a>

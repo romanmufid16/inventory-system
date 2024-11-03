@@ -10,9 +10,10 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $product = Product::all();
+        $limit = $request->query('limit', 10);
+        $product = Product::paginate($limit);
         return view('products.index', compact('product'));
     }
 
