@@ -34,18 +34,15 @@
                 </div>
 
                 <div class="relative overflow-x-auto">
+                    @php
+                        $currentPage = $product->currentPage(); // Mendapatkan halaman saat ini
+                        $perPage = $product->perPage(); // Jumlah item per halaman
+                        $start = ($currentPage - 1) * $perPage + 1; // Menghitung nomor urut mulai dari 1
+                    @endphp
                     <table class="text-left w-full whitespace-nowrap">
                         <thead class="bg-sky-800 text-white">
                             <tr class="border-b border-gray-300">
-                                <th class="pl-3 py-3">
-                                    <div class="flex items-center mb-1">
-                                        <input
-                                            class="w-4 h-4 text-indigo-600 bg-white border-gray-300 rounded focus:ring-indigo-600 focus:outline-none focus:ring-2"
-                                            type="checkbox" value="" id="checkAll" />
-                                        <label for="checkAll"></label>
-                                    </div>
-                                </th>
-                                <th class="py-3">No</th>
+                                <th class="px-6 py-3">No</th>
                                 <th class="listjs-sorter px-6 py-3" data-sort="name">Product Name</th>
                                 <th class="listjs-sorter px-6 py-3" data-sort="quantity">Quantity</th>
                                 <th class="listjs-sorter px-6 py-3" data-sort="price">Price</th>
@@ -53,39 +50,38 @@
                             </tr>
                         </thead>
                         <tbody class="list">
-                            @foreach ($product as $i => $item)
+                            @foreach ($product as $item)
                                 <tr class="border-b border-gray-300 hover:bg-gray-100">
-                                    <td class="product_checks pl-3 py-3">
-                                        <div class="flex items-center mb-1">
-                                            <input
-                                                class="w-4 h-4 text-indigo-600 bg-white border-gray-300 rounded focus:ring-indigo-600 focus:outline-none focus:ring-2"
-                                                type="checkbox" value="{{ $item->id }}" id="productCheckbox2" />
-                                            <label for="productCheckbox2"></label>
-                                        </div>
-                                    </td>
-                                    <td class="py-3">{{ $i + 1 }}</td>
+                                    <td class="px-6 py-3">{{ $start++ }}</td>
                                     <td class="name px-6 py-3">{{ $item->name }}</td>
                                     <td class="quantity px-6 py-3">{{ $item->quantity }}</td>
                                     <td class="price px-6 py-3">{{ $item->price }}</td>
-                                    <td class="action_info px-6 py-3">
-                                        <div class="dropdown">
-                                            <a class="btn rounded-full h-8 w-8 flex items-center gap-x-2 bg-transparent text-gray-600 border-transparent border disabled:opacity-50 disabled:pointer-events-none hover:text-gray-800 hover:bg-gray-300 hover:border-gray-300 active:bg-gray-300 active:border-gray-300 active:text-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 btn-sm"
-                                                href="#!" role="button" data-bs-toggle="dropdown"
-                                                aria-expanded="false">
-                                                <i data-feather="more-vertical" class="icon-xs"></i>
+                                    @if (Auth::user()->role == 'admin')
+                                        <td class="action_info px-6 py-3 flex gap-3">
+                                            <a href="{{ route('products.edit', $item->id) }}"
+                                                class="bg-yellow-500 p-2 rounded-md shadow-md">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                                    fill="currentColor" class="text-white size-6">
+                                                    <path
+                                                        d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
+                                                </svg>
                                             </a>
-
-                                            <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item flex items-center" href="#!">Action</a>
-                                                </li>
-                                                <li><a class="dropdown-item flex items-center" href="#!">Another
-                                                        action</a>
-                                                </li>
-                                                <li><a class="dropdown-item flex items-center" href="#!">Something else
-                                                        here</a></li>
-                                            </ul>
-                                        </div>
-                                    </td>
+                                            <form class="bg-red-500 rounded-md shadow-md p-2 h-10"
+                                                onsubmit="return confirm('Are you sure you want to delete {{ $item->name }}?')"
+                                                action="{{ route('products.destroy', $item->id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-white size-6">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                                        fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                            d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>
@@ -100,6 +96,46 @@
             </div>
         </div>
     </div>
+    <div id="toastSuccess"
+        class="fixed top-5 right-5 hidden bg-white border-t-4 border-green-500 text-green-500 w-1/4 p-4 rounded-lg shadow-lg">
+        <h1 class="text-md font-semibold text-black">Success</h1>
+        {{ session('success') }}
+    </div>
+    <div id="toastError"
+        class="fixed top-5 right-5 hidden bg-white border-t-4 border-red-500 text-red-500 p-4 rounded-lg shadow-lg">
+        <h1 class="text-md font-semibold text-black">Error</h1>
+        {{ session('error') }}
+    </div>
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toast = document.getElementById('toastSuccess');
+                toast.classList.remove('hidden');
+                toast.classList.add('block');
+
+                // Menghilangkan toast setelah 3 detik
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                    toast.classList.remove('block');
+                }, 3000);
+            });
+        </script>
+    @endif
+    @if (session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toast = document.getElementById('toastError');
+                toast.classList.remove('hidden');
+                toast.classList.add('block');
+
+                // Menghilangkan toast setelah 3 detik
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                    toast.classList.remove('block');
+                }, 3000);
+            });
+        </script>
+    @endif
     <script>
         function updateLimit() {
             var limit = document.getElementById("limit").value;

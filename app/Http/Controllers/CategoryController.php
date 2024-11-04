@@ -22,7 +22,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('categories.create');
     }
 
     /**
@@ -30,7 +30,14 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|string',
+            'description' => 'string'
+        ]);
+
+        Category::create($data);
+
+        return redirect()->route('categories.index')->with('success','Category added successfully');
     }
 
     /**
@@ -46,7 +53,8 @@ class CategoryController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data = Category::findOrFail($id);
+        return view('categories.edit', compact('data'));
     }
 
     /**
@@ -54,7 +62,16 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|string',
+            'description' => 'string'
+        ]);
+
+        $category = Category::findOrFail($id);
+
+        $category->update($data);
+        return redirect()->route('categories.index')->with('success', 'Data updated successfully');
+
     }
 
     /**
@@ -62,6 +79,8 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $data = Category::findOrFail($id);
+        $data->delete();
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus.'); // Menambahkan flash message
     }
 }

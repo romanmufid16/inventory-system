@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -22,7 +24,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $supplier = Supplier::all();
+        $category = Category::all();
+        return view('products.create', compact('supplier', 'category'));
     }
 
     /**
@@ -30,7 +34,17 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'category_id' => 'required',
+            'supplier_id' => 'required',
+            'name' => 'required|string',
+            'quantity' => 'required|integer',
+            'price' => 'required|integer'
+        ]);
+
+        Product::create($data);
+
+        return redirect()->route('products.index')->with('success','Data added successfully');
     }
 
     /**
@@ -62,6 +76,8 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $product = Product::findOrFail($id);
+        $product->delete();
+        return redirect()->route('products.index')->with('success','Data deleted successfully');
     }
 }

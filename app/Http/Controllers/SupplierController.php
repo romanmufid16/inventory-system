@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
@@ -22,7 +23,7 @@ class SupplierController extends Controller
      */
     public function create()
     {
-        //
+        return view('suppliers.create');
     }
 
     /**
@@ -30,7 +31,16 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'email' => 'required|email|string|unique.suppliers:email',
+            'name' => 'required|string',
+            'contact_person' => 'required|string',
+            'phone_number' => 'required|string|max:14',
+            'address' => 'required|string',
+        ]);
+
+        Supplier::create($data);
+        return redirect()->route('suppliers.index')->with('success', 'Data added successfully');
     }
 
     /**
@@ -46,7 +56,8 @@ class SupplierController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data = Supplier::findOrFail($id);
+        return view('suppliers.edit', compact('data'));
     }
 
     /**
@@ -54,7 +65,18 @@ class SupplierController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $data = $request->validate([
+            'email' => 'required|string|email|',
+            'name' => 'required|string',
+            'contact_person' => 'required|string',
+            'phone_number' => 'required|string|max:14',
+            'address' => 'required|string'
+        ]);
+
+        $supplier = Supplier::findOrFail($id);
+
+        $supplier->update($data);
+        return redirect()->route('suppliers.index')->with('success','Data updated successfully');
     }
 
     /**
@@ -62,6 +84,12 @@ class SupplierController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $data = Category::find($id);
+        if (!$data) {   
+            return redirect()->back()->with('error', 'Data not found');
+        }
+
+        $data->delete();
+        return redirect()->route('suppliers.index')->with('success', 'Data deleted successfully');
     }
 }
